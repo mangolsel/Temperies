@@ -1,6 +1,7 @@
 package net.konn.temperies.event;
 
 import net.konn.temperies.attachment.Temperies_Attachments;
+import net.konn.temperies.item.custom.TemperatureInstrumentItem;
 import net.konn.temperies.network.TemperatureSyncPayload;
 import net.konn.temperies.temperature.*;
 import net.konn.temperies.util.Temperies_Tags;
@@ -9,8 +10,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,6 +33,8 @@ public final class TemperatureHandler {
     private static final int COLD_DAMAGE_INTERVAL_TICKS = 40;
     private static final float COLD_DAMAGE = 1.0F;
     private static final int UPDATE_INTERVAL_TICKS = 10;
+    private static final int THERMOSCOPE_BREAK_CHECK_INTERVAL_TICKS = 20;
+    private static final int THERMOSCOPE_BREAK_THRESHOLD = 90;
     private static final int MAX_HEAT = TemperatureConstants.MAX_EXPOSURE;
     private static final int WATER_COOLING_STEP = 3;
     private static final int MAX_COLD = TemperatureConstants.MAX_EXPOSURE;
@@ -51,8 +57,91 @@ public final class TemperatureHandler {
             updateTemperature(player);
         }
 
+        if (player.tickCount
+                % THERMOSCOPE_BREAK_CHECK_INTERVAL_TICKS == 0) {
+
+            tryBreakFragileTemperatureInstrument(player);
+        }
+
         maintainCustomFreezing(player);
         applyColdDamage(player);
+    }
+    private void tryBreakFragileTemperatureInstrument(
+            ServerPlayer player
+    ) {
+        if (!player.isAlive()
+                || player.isCreative()
+                || player.isSpectator()) {
+            return;
+        }
+
+        ItemStack instrument =
+                findHeldFragileTemperatureInstrument(player);
+
+        if (instrument.isEmpty()) {
+            return;
+        }
+
+        int rawHeat = player.getData(
+                Temperies_Attachments.HEAT_EXPOSURE
+        );
+
+        int rawCold = player.getData(
+                Temperies_Attachments.COLD_EXPOSURE
+        );
+
+        ExposureState effectiveExposure =
+                getEffectiveExposure(
+                        rawHeat,
+                        rawCold
+                );
+
+        int extremeExposure = Math.max(
+                effectiveExposure.heat(),
+                effectiveExposure.cold()
+        );
+
+        if (extremeExposure < THERMOSCOPE_BREAK_THRESHOLD) {
+            return;
+        }
+
+        instrument.shrink(1);
+
+        player.serverLevel().playSound(
+                null,
+                player.blockPosition(),
+                SoundEvents.GLASS_BREAK,
+                SoundSource.PLAYERS,
+                1.0F,
+                0.9F
+                        + player.getRandom().nextFloat()
+                        * 0.2F
+        );
+    }
+    private ItemStack findHeldFragileTemperatureInstrument(
+            ServerPlayer player
+    ) {
+        ItemStack mainHand =
+                player.getMainHandItem();
+
+        if (mainHand.getItem()
+                instanceof TemperatureInstrumentItem instrument
+                && instrument.isFragile()) {
+
+            return mainHand;
+        }
+
+        ItemStack offHand =
+                player.getOffhandItem();
+
+        if (offHand.getItem()
+                instanceof TemperatureInstrumentItem instrument
+                && instrument.isFragile()) {
+
+            return offHand;
+        }
+
+        return ItemStack.EMPTY;
     }
     private void applyColdDamage(ServerPlayer player) {
         if (!player.isAlive()

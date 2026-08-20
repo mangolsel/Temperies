@@ -2,6 +2,7 @@ package net.konn.temperies.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.konn.temperies.Temperies;
+import net.konn.temperies.item.custom.TemperatureInstrumentItem;
 import net.konn.temperies.temperature.TemperatureConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -60,6 +61,9 @@ public final class TemperatureHudRenderer {
                 || minecraft.options.hideGui) {
             return;
         }
+        if (!isHoldingTemperatureInstrument(minecraft)) {
+            return;
+        }
 
         float heatPercent = Mth.clamp(
                 ClientTemperatureState.getHeatPercent(),
@@ -96,6 +100,27 @@ public final class TemperatureHudRenderer {
                 lineY,
                 signedTemperature
         );
+    }
+    private static boolean isHoldingTemperatureInstrument(
+            Minecraft minecraft
+    ) {
+        if (minecraft.player == null) {
+            return false;
+        }
+
+        boolean mainHand =
+                minecraft.player
+                        .getMainHandItem()
+                        .getItem()
+                        instanceof TemperatureInstrumentItem;
+
+        boolean offHand =
+                minecraft.player
+                        .getOffhandItem()
+                        .getItem()
+                        instanceof TemperatureInstrumentItem;
+
+        return mainHand || offHand;
     }
 
     private static int calculateLineY(

@@ -18,6 +18,8 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         //ITEMS
         basicItem(Temperies_Items.PEAT.get());
+        basicItem(Temperies_Items.THERMOSCOPE.get());
+        basicItem(Temperies_Items.THERMOMETER.get());
 
         //ARMOR
         basicItem(Temperies_Items.WOOL_BOOTS.get());

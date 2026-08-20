@@ -2,6 +2,7 @@ package net.konn.temperies.item;
 
 import net.konn.temperies.Temperies;
 import net.konn.temperies.item.custom.TemperatureArmorItem;
+import net.konn.temperies.item.custom.TemperatureInstrumentItem;
 import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -9,6 +10,18 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class Temperies_Items {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Temperies.MOD_ID);
+
+    // TEMPERATURE INSTRUMENTS
+    public static final DeferredItem<TemperatureInstrumentItem> THERMOSCOPE =
+            ITEMS.register(
+                    "thermoscope",
+                    () -> new TemperatureInstrumentItem(true,
+                            new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<TemperatureInstrumentItem> THERMOMETER =
+            ITEMS.register(
+                    "thermometer", () -> new TemperatureInstrumentItem(false,
+                            new Item.Properties().stacksTo(1)));
 
     //ITEMS
     public static final DeferredItem<Item> PEAT = ITEMS.registerSimpleItem("peat");

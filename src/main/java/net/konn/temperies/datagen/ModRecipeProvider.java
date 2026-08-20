@@ -7,9 +7,14 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -52,6 +57,22 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("AA")
                 .pattern("AA")
                 .unlockedBy("has_peat",has(Temperies_Items.PEAT.get())).save(recipeOutput);
+        //INSTRUMENTS
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Temperies_Items.THERMOSCOPE.get())
+                .define('A', Tags.Items.GLASS_BLOCKS)
+                .define('B', DataComponentIngredient.of(false, PotionContents.createItemStack(Items.POTION, Potions.WATER)))
+                .define('C', Items.COPPER_INGOT)
+                .pattern(" A ")
+                .pattern("CBC")
+                .unlockedBy("has_glass_bottle",has(Items.GLASS_BOTTLE)).save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Temperies_Items.THERMOMETER.get())
+                .define('A', Items.IRON_INGOT)
+                .define('B', Temperies_Items.THERMOSCOPE.get())
+                .define('C', Items.REDSTONE)
+                .pattern("ABA")
+                .pattern(" C ")
+                .unlockedBy("has_iron",has(Items.IRON_INGOT)).save(recipeOutput);
     }
 
 

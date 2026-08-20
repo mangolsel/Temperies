@@ -7,6 +7,9 @@
     "minecraft:snowy_slopes",
     "minecraft:frozen_peaks",
     "minecraft:jagged_peaks",
+    "minecraft:taiga",
+    "minecraft:old_growth_pine_taiga",
+    "minecraft:old_growth_spruce_taiga",
     "minecraft:frozen_river"
   ]
 }

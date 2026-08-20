@@ -17,12 +17,14 @@ public class Temperies_CreativeModeTabs {
     public static final Supplier<CreativeModeTab> TEMPERIES_TAB =
             CREATIVE_MODE_TABS.register("temperies_tab",() -> CreativeModeTab.builder()
                     .title(Component.translatable("itemsGroup.temperies.temperies_tab"))
-                    .icon(()->new ItemStack(Temperies_Items.WOOL_HELMET.get()))
+                    .icon(()->new ItemStack(Temperies_Items.THERMOMETER.get()))
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(Temperies_Items.WOOL_HELMET);
                         output.accept(Temperies_Items.WOOL_CHESTPLATE);
                         output.accept(Temperies_Items.WOOL_LEGGINGS);
                         output.accept(Temperies_Items.WOOL_BOOTS);
+                        output.accept(Temperies_Items.THERMOSCOPE);
+                        output.accept(Temperies_Items.THERMOMETER);
                     })
                     .build());
 
