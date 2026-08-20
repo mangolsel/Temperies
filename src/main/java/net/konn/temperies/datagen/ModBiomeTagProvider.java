@@ -30,6 +30,9 @@ public final class ModBiomeTagProvider extends BiomeTagsProvider {
                         Biomes.SNOWY_SLOPES,
                         Biomes.FROZEN_PEAKS,
                         Biomes.JAGGED_PEAKS,
+                        Biomes.TAIGA,
+                        Biomes.OLD_GROWTH_PINE_TAIGA,
+                        Biomes.OLD_GROWTH_SPRUCE_TAIGA,
                         Biomes.FROZEN_RIVER
                 );
 

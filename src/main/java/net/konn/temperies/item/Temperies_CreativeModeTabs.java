@@ -1,10 +1,8 @@
 package net.konn.temperies.item;
 
 import net.konn.temperies.Temperies;
-import net.konn.temperies.block.Temperies_Blocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
@@ -16,37 +14,15 @@ public class Temperies_CreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
         DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Temperies.MOD_ID);
 
-    public static final Supplier<CreativeModeTab> TEMPERIES_ITEMS_TAB =
-            CREATIVE_MODE_TABS.register("temperies_items_tab",() -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemsGroup.temperies.temperies_items_tab"))
-                    .icon(()->new ItemStack(Temperies_Items.PEAT.get()))
-                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(Temperies.MOD_ID,"temperies_blocks_tab"))
-                    .displayItems((itemDisplayParameters, output) -> {
-                        output.accept(Temperies_Items.PEAT);
-                    })
-                    .build());
-
-    public static final Supplier<CreativeModeTab> TEMPERIES_INSTRUMENTS_TAB =
-            CREATIVE_MODE_TABS.register("temperies_instruments_tab",() -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemsGroup.temperies.temperies_instruments_tab"))
+    public static final Supplier<CreativeModeTab> TEMPERIES_TAB =
+            CREATIVE_MODE_TABS.register("temperies_tab",() -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemsGroup.temperies.temperies_tab"))
                     .icon(()->new ItemStack(Temperies_Items.WOOL_HELMET.get()))
-                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(Temperies.MOD_ID,"temperies_items_tab"))
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(Temperies_Items.WOOL_HELMET);
                         output.accept(Temperies_Items.WOOL_CHESTPLATE);
                         output.accept(Temperies_Items.WOOL_LEGGINGS);
                         output.accept(Temperies_Items.WOOL_BOOTS);
-
-                    })
-                    .build());
-
-
-    public static final Supplier<CreativeModeTab> TEMPERIES_BLOCKS_TAB =
-            CREATIVE_MODE_TABS.register("temperies_blocks_tab",() -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemsGroup.temperies.temperies_blocks_tab"))
-                    .icon(()->new ItemStack(Temperies_Blocks.PEAT_BLOCK.get()))
-                    .displayItems((itemDisplayParameters, output) -> {
-                        output.accept(Temperies_Blocks.PEAT_BLOCK);
                     })
                     .build());
 

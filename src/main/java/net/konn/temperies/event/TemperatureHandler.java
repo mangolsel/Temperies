@@ -194,20 +194,12 @@ public final class TemperatureHandler {
                 heat = recoverExposure(heat);
 
             } else if (cold < maximumColdExposure) {
-                /*
-                 * Игрок ещё не достиг предела замерзания,
-                 * разрешённого текущей одеждой.
-                 */
                 cold = Math.min(
                         maximumColdExposure,
                         cold + EXPOSURE_STEP
                 );
 
             } else if (cold > maximumColdExposure) {
-                /*
-                 * Игрок надел более тёплую одежду,
-                 * поэтому постепенно согревается до нового предела.
-                 */
                 cold = Math.max(
                         maximumColdExposure,
                         cold - RECOVERY_STEP
