@@ -18,16 +18,13 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(
         modid = Temperies.MOD_ID,
         value = Dist.CLIENT
 )
 public final class LoomTabClientHandler {
-    private static double savedCursorX;
-    private static double savedCursorY;
-    private static boolean restoreCursor;
+    private static boolean seamlessTabSwitch;
     private static BlockPos lastLoomPos;
 
     private LoomTabClientHandler() {
@@ -36,16 +33,7 @@ public final class LoomTabClientHandler {
             BlockPos loomPos,
             boolean liningTab
     ) {
-        Minecraft minecraft =
-                Minecraft.getInstance();
-
-        savedCursorX =
-                minecraft.mouseHandler.xpos();
-
-        savedCursorY =
-                minecraft.mouseHandler.ypos();
-
-        restoreCursor = true;
+        seamlessTabSwitch = true;
 
         PacketDistributor.sendToServer(
                 new SwitchLoomTabPayload(
@@ -53,6 +41,14 @@ public final class LoomTabClientHandler {
                         liningTab
                 )
         );
+    }
+    public static boolean consumeSeamlessTabSwitch() {
+        if (!seamlessTabSwitch) {
+            return false;
+        }
+
+        seamlessTabSwitch = false;
+        return true;
     }
 
     @SubscribeEvent
@@ -77,31 +73,6 @@ public final class LoomTabClientHandler {
     public static void onScreenInit(
             ScreenEvent.Init.Post event
     ) {
-        if (restoreCursor
-                && (event.getScreen() instanceof LoomScreen
-                || event.getScreen() instanceof LiningScreen)) {
-
-            double cursorX =
-                    savedCursorX;
-
-            double cursorY =
-                    savedCursorY;
-
-            restoreCursor = false;
-
-            Minecraft minecraft =
-                    Minecraft.getInstance();
-
-            /*
-             * Восстанавливаем прямо сейчас,
-             * до первого кадра нового GUI.
-             */
-            GLFW.glfwSetCursorPos(
-                    minecraft.getWindow().getWindow(),
-                    cursorX,
-                    cursorY
-            );
-        }
 
         if (!(event.getScreen()
                 instanceof LoomScreen screen)) {
