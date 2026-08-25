@@ -39,6 +39,7 @@ public final class TemperatureHandler {
     private static final int MAX_COLD = TemperatureConstants.MAX_EXPOSURE;
     private static final int EXPOSURE_STEP = 1;
     private static final int RECOVERY_STEP = 3;
+    private static final int EQUIPMENT_ACCELERATION_DIVISOR = 75;
     private static final int HEAT_DAMAGE_INTERVAL_TICKS = 40;
     private static final float HEAT_DAMAGE = 1.0F;
     private static final int ROOM_HORIZONTAL_RADIUS = 10;
@@ -60,6 +61,18 @@ public final class TemperatureHandler {
 
         maintainCustomFreezing(player);
         applyColdDamage(player);
+    }
+    private int getEquipmentAcceleration(
+            int modifier
+    ) {
+        if (modifier <= 0) {
+            return 0;
+        }
+
+        return Mth.ceil(
+                modifier
+                        / (float) EQUIPMENT_ACCELERATION_DIVISOR
+        );
     }
 
     private void tryBreakFragileTemperatureInstruments(
@@ -180,10 +193,13 @@ public final class TemperatureHandler {
     private ExposureState applyHeatSource(
             int heat,
             int cold,
-            HeatSource source
+            HeatSource source,
+            int warmingAcceleration,
+            int maximumHeatExposure
     ) {
         int remainingChange =
-                source.changePerUpdate();
+                source.changePerUpdate()
+                        + warmingAcceleration;
 
         if (cold > 0) {
             int removedCold = Math.min(
@@ -196,10 +212,17 @@ public final class TemperatureHandler {
         }
 
 
+        int effectiveTarget =
+                Math.min(
+                        source.targetExposure(),
+                        maximumHeatExposure
+                );
+
         if (remainingChange > 0
-                && heat < source.targetExposure()) {
+                && heat < effectiveTarget) {
+
             heat = Math.min(
-                    source.targetExposure(),
+                    effectiveTarget,
                     heat + remainingChange
             );
         }
@@ -244,8 +267,29 @@ public final class TemperatureHandler {
             return;
         }
 
-        int maximumColdExposure =
-                getMaximumColdExposure(player);
+        int equipmentModifier =
+                TemperatureEquipment.getTotalModifier(player);
+
+        int warmingModifier =
+                TemperatureEquipment.getWarmingModifier(player);
+
+        int coolingModifier =
+                TemperatureEquipment.getCoolingModifier(player);
+
+
+        int warmingAcceleration =
+                getEquipmentAcceleration(
+                        warmingModifier
+                );
+
+        int coolingAcceleration =
+                getEquipmentAcceleration(
+                        coolingModifier
+                );
+
+
+        int maximumColdExposure = getMaximumColdExposure(equipmentModifier);
+        int maximumHeatExposure = getMaximumHeatExposure(equipmentModifier);
 
         Holder<Biome> biome = level.getBiome(
                 player.blockPosition()
@@ -260,49 +304,104 @@ public final class TemperatureHandler {
             cold = recoverExposure(cold);
 
         } else if (biome.is(Temperies_Tags.Biomes.COLD)) {
+
             boolean enclosed = isInsideEnclosedRoom(
                     level,
                     player.blockPosition()
             );
 
             if (enclosed) {
+
                 heat = recoverExposure(heat);
                 cold = recoverExposure(cold);
 
             } else if (heat > 0) {
-                heat = recoverExposure(heat);
+
+                /*
+                 * Охлаждающая одежда быстрее
+                 * убирает накопленное тепло.
+                 */
+                heat = recoverExposure(
+                        heat,
+                        RECOVERY_STEP
+                                + coolingAcceleration
+                );
 
             } else if (cold < maximumColdExposure) {
+
+                /*
+                 * Охлаждающая одежда ускоряет
+                 * замерзание в холодной среде.
+                 */
                 cold = Math.min(
                         maximumColdExposure,
-                        cold + EXPOSURE_STEP
+                        cold
+                                + EXPOSURE_STEP
+                                + coolingAcceleration
                 );
 
             } else if (cold > maximumColdExposure) {
+
+                /*
+                 * Согревающая одежда вытягивает игрока
+                 * обратно к своей безопасной температуре.
+                 */
                 cold = Math.max(
                         maximumColdExposure,
-                        cold - RECOVERY_STEP
+                        cold
+                                - RECOVERY_STEP
+                                - warmingAcceleration
                 );
             }
 
         } else if (biome.is(Temperies_Tags.Biomes.HOT)) {
+
             boolean exposedToSun =
                     level.isDay()
                             && !player.isInWaterOrRain()
                             && !hasShadeAbove(level, player);
 
             if (!exposedToSun) {
+
                 heat = recoverExposure(heat);
                 cold = recoverExposure(cold);
 
             } else if (cold > 0) {
 
-                cold = recoverExposure(cold);
+                /*
+                 * Шерстяная одежда помогает жаре
+                 * быстрее убрать накопленный холод.
+                 */
+                cold = recoverExposure(
+                        cold,
+                        RECOVERY_STEP
+                                + warmingAcceleration
+                );
 
-            } else {
+            } else if (heat < maximumHeatExposure) {
+
+                /*
+                 * Согревающая одежда ускоряет
+                 * перегрев в жарком биоме.
+                 */
                 heat = Math.min(
-                        MAX_HEAT,
-                        heat + EXPOSURE_STEP
+                        maximumHeatExposure,
+                        heat
+                                + EXPOSURE_STEP
+                                + warmingAcceleration
+                );
+
+            } else if (heat > maximumHeatExposure) {
+
+                /*
+                 * Охлаждающая одежда постепенно
+                 * возвращает игрока к допустимому пределу.
+                 */
+                heat = Math.max(
+                        maximumHeatExposure,
+                        heat
+                                - RECOVERY_STEP
+                                - coolingAcceleration
                 );
             }
 
@@ -321,7 +420,9 @@ public final class TemperatureHandler {
             ExposureState warmedState = applyHeatSource(
                     heat,
                     cold,
-                    nearbyHeatSource
+                    nearbyHeatSource,
+                    warmingAcceleration,
+                    maximumHeatExposure
             );
 
             heat = warmedState.heat();
@@ -479,6 +580,15 @@ public final class TemperatureHandler {
         return Math.max(
                 0,
                 exposure - RECOVERY_STEP
+        );
+    }
+    private int recoverExposure(
+            int exposure,
+            int step
+    ) {
+        return Math.max(
+                0,
+                exposure - step
         );
     }
 
@@ -705,14 +815,25 @@ public final class TemperatureHandler {
         );
     }
     private int getMaximumColdExposure(
-            ServerPlayer player
+            int equipmentModifier
     ) {
         int insulation = Mth.clamp(
-                TemperatureEquipment.getTotalModifier(player),
+                equipmentModifier,
                 0,
                 MAX_COLD
         );
 
         return MAX_COLD - insulation;
+    }
+    private int getMaximumHeatExposure(
+            int equipmentModifier
+    ) {
+        int cooling = Mth.clamp(
+                -equipmentModifier,
+                0,
+                MAX_HEAT
+        );
+
+        return MAX_HEAT - cooling;
     }
 }
