@@ -25,7 +25,7 @@ public class Temperies_Items {
 
     //ITEMS
     public static final DeferredItem<Item> PEAT = ITEMS.registerSimpleItem("peat");
-    public static final DeferredItem<Item> FLAX_FIBER = ITEMS.registerSimpleItem("flax_fiber");
+    public static final DeferredItem<Item> FLAX_FABRIC = ITEMS.registerSimpleItem("flax_fabric");
 
     //ARMOR
     public static final DeferredItem<Item> WOOL_HELMET =

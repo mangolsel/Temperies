@@ -21,11 +21,11 @@ public class Temperies_Tags {
         }
     }
     public static class Items {
-        public static final TagKey<Item> COOLING_MATERIALS =
-                createTag("cooling_materials");
 
-        private static TagKey<Item> createTag (String name){
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath(Temperies.MOD_ID,name));
+        public static final TagKey<Item> COOLING_MATERIALS = createTag("cooling_materials");
+
+        private static TagKey<Item> createTag(String name) {return ItemTags.create(
+                    ResourceLocation.fromNamespaceAndPath(Temperies.MOD_ID, name));
         }
     }
     public static final class Biomes {

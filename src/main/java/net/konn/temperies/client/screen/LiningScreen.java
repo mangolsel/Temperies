@@ -1,6 +1,9 @@
 package net.konn.temperies.client.screen;
 
 import net.konn.temperies.Temperies;
+import net.konn.temperies.client.LoomTabClientHandler;
+import net.konn.temperies.client.widget.ItemIconButton;
+import net.konn.temperies.item.Temperies_Items;
 import net.konn.temperies.menu.LiningMenu;
 import net.konn.temperies.network.SwitchLoomTabPayload;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,6 +12,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class LiningScreen
@@ -49,48 +54,56 @@ public class LiningScreen
     private void addTabs() {
 
         /*
-         * Vanilla-вкладка.
+         * Вкладка обычного ткацкого станка.
          */
+        ItemIconButton patternsTab =
+                new ItemIconButton(
+                        leftPos,
+                        topPos - 22,
+                        28,
+                        22,
+
+                        new ItemStack(
+                                Items.WHITE_BANNER
+                        ),
+
+                        Component.translatable(
+                                "gui.temperies.loom.patterns"
+                        ),
+
+                        button ->
+                                LoomTabClientHandler.switchTab(
+                                        menu.getLoomPos(),
+                                        false
+                                )
+                );
+
         this.addRenderableWidget(
-                Button.builder(
-                                Component.translatable(
-                                        "gui.temperies.loom.patterns"
-                                ),
-                                button ->
-                                        PacketDistributor.sendToServer(
-                                                new SwitchLoomTabPayload(
-                                                        menu.getLoomPos(),
-                                                        false
-                                                )
-                                        )
-                        )
-                        .bounds(
-                                leftPos,
-                                topPos - 20,
-                                55,
-                                20
-                        )
-                        .build()
+                patternsTab
         );
 
+
         /*
-         * Текущая вкладка — отключённая кнопка.
+         * Текущая вкладка подкладок.
          */
-        Button liningTab =
-                Button.builder(
-                                Component.translatable(
-                                        "gui.temperies.loom.lining"
-                                ),
-                                button -> {
-                                }
-                        )
-                        .bounds(
-                                leftPos + 57,
-                                topPos - 20,
-                                55,
-                                20
-                        )
-                        .build();
+        ItemIconButton liningTab =
+                new ItemIconButton(
+                        leftPos + 30,
+                        topPos - 22,
+                        28,
+                        22,
+
+                        new ItemStack(
+                                Temperies_Items.FLAX_FABRIC.get()
+                        ),
+
+                        Component.translatable(
+                                "gui.temperies.loom.lining"
+                        ),
+
+                        button -> {
+                        }
+                );
 
         liningTab.active = false;
 
@@ -106,13 +119,6 @@ public class LiningScreen
             int mouseY,
             float partialTick
     ) {
-        renderBackground(
-                guiGraphics,
-                mouseX,
-                mouseY,
-                partialTick
-        );
-
         super.render(
                 guiGraphics,
                 mouseX,

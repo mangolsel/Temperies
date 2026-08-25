@@ -38,7 +38,7 @@ public class Temperies_ArmorMaterials {
                         map.put(ArmorItem.Type.LEGGINGS, 1);
                         map.put(ArmorItem.Type.CHESTPLATE, 2);
                         map.put(ArmorItem.Type.HELMET, 1);
-                    }), 5, SoundEvents.ARMOR_EQUIP_LEATHER, () -> Ingredient.of(Temperies_Items.FLAX_FIBER),
+                    }), 5, SoundEvents.ARMOR_EQUIP_LEATHER, () -> Ingredient.of(Temperies_Items.FLAX_FABRIC),
                     List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(Temperies.MOD_ID, "flax"))),
                     0,0));
 

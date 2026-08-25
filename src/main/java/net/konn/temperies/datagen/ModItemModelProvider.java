@@ -20,7 +20,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(Temperies_Items.PEAT.get());
         basicItem(Temperies_Items.THERMOSCOPE.get());
         basicItem(Temperies_Items.THERMOMETER.get());
-        basicItem(Temperies_Items.FLAX_FIBER.get());
+        basicItem(Temperies_Items.FLAX_FABRIC.get());
 
         //ARMOR
         basicItem(Temperies_Items.WOOL_BOOTS.get());

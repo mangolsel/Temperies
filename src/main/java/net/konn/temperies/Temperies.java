@@ -3,7 +3,6 @@ package net.konn.temperies;
 import net.konn.temperies.attachment.Temperies_Attachments;
 import net.konn.temperies.block.Temperies_Blocks;
 import net.konn.temperies.component.Temperies_DataComponents;
-import net.konn.temperies.event.LoomLiningHandler;
 import net.konn.temperies.event.TemperatureHandler;
 import net.konn.temperies.item.Temperies_ArmorMaterials;
 import net.konn.temperies.item.Temperies_CreativeModeTabs;
@@ -44,7 +43,6 @@ public class Temperies {
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new TemperatureHandler());
-        NeoForge.EVENT_BUS.register(new LoomLiningHandler());
 
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
