@@ -22,6 +22,7 @@
   "tooltip.temperies.temperature_modifier.positive": "Warms",
   "tooltip.temperies.temperature_modifier.negative": "Cools",
   "tooltip.temperies.lining.cooling": "Cools",
-  "tooltip.temperies.lining.warming": "Warms"
+  "tooltip.temperies.lining.warming": "Warms",
+  "container.temperies.lining": "Lining"
 
 }

@@ -15,7 +15,7 @@ public class ItemIconButton extends Button {
             int width,
             int height,
             ItemStack icon,
-            Component narration,
+            Component description,
             OnPress onPress
     ) {
         super(
@@ -23,7 +23,10 @@ public class ItemIconButton extends Button {
                 y,
                 width,
                 height,
-                narration,
+
+                // Ничего не рисуем текстом на кнопке.
+                Component.empty(),
+
                 onPress,
                 DEFAULT_NARRATION
         );
@@ -39,7 +42,9 @@ public class ItemIconButton extends Button {
             float partialTick
     ) {
         /*
-         * Сначала обычная minecraft-кнопка.
+         * Vanilla-фон кнопки.
+         * Поскольку message пустой,
+         * текста на ней больше нет.
          */
         super.renderWidget(
                 guiGraphics,
@@ -48,9 +53,6 @@ public class ItemIconButton extends Button {
                 partialTick
         );
 
-        /*
-         * Затем предмет поверх неё.
-         */
         int iconX =
                 getX()
                         + (getWidth() - 16) / 2;

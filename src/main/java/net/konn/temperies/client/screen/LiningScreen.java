@@ -5,16 +5,13 @@ import net.konn.temperies.client.LoomTabClientHandler;
 import net.konn.temperies.client.widget.ItemIconButton;
 import net.konn.temperies.item.Temperies_Items;
 import net.konn.temperies.menu.LiningMenu;
-import net.konn.temperies.network.SwitchLoomTabPayload;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public class LiningScreen
         extends AbstractContainerScreen<LiningMenu> {
@@ -40,6 +37,10 @@ public class LiningScreen
 
         this.imageWidth = 176;
         this.imageHeight = 166;
+
+        // Название меню
+        this.titleLabelX = 9;
+        this.titleLabelY = 4;
 
         this.inventoryLabelY = 72;
     }

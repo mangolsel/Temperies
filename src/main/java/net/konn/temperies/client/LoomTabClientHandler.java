@@ -20,7 +20,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-
 @EventBusSubscriber(
         modid = Temperies.MOD_ID,
         value = Dist.CLIENT
@@ -28,9 +27,7 @@ import org.lwjgl.glfw.GLFW;
 public final class LoomTabClientHandler {
     private static double savedCursorX;
     private static double savedCursorY;
-
     private static boolean restoreCursor;
-
     private static BlockPos lastLoomPos;
 
     private LoomTabClientHandler() {
@@ -84,21 +81,26 @@ public final class LoomTabClientHandler {
                 && (event.getScreen() instanceof LoomScreen
                 || event.getScreen() instanceof LiningScreen)) {
 
-            double cursorX = savedCursorX;
-            double cursorY = savedCursorY;
+            double cursorX =
+                    savedCursorX;
+
+            double cursorY =
+                    savedCursorY;
 
             restoreCursor = false;
 
             Minecraft minecraft =
                     Minecraft.getInstance();
 
-            minecraft.execute(() -> {
-                GLFW.glfwSetCursorPos(
-                        minecraft.getWindow().getWindow(),
-                        cursorX,
-                        cursorY
-                );
-            });
+            /*
+             * Восстанавливаем прямо сейчас,
+             * до первого кадра нового GUI.
+             */
+            GLFW.glfwSetCursorPos(
+                    minecraft.getWindow().getWindow(),
+                    cursorX,
+                    cursorY
+            );
         }
 
         if (!(event.getScreen()
