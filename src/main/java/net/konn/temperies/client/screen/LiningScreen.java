@@ -7,11 +7,14 @@ import net.konn.temperies.item.Temperies_Items;
 import net.konn.temperies.menu.LiningMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import java.util.List;
 
 public class LiningScreen
         extends AbstractContainerScreen<LiningMenu> {
@@ -21,6 +24,52 @@ public class LiningScreen
                     Temperies.MOD_ID,
                     "textures/gui/container/loom_lining.png"
             );
+    private static final List<ResourceLocation> ARMOR_ICONS =
+            List.of(
+                    ResourceLocation.withDefaultNamespace(
+                            "item/empty_armor_slot_helmet"
+                    ),
+                    ResourceLocation.withDefaultNamespace(
+                            "item/empty_armor_slot_chestplate"
+                    ),
+                    ResourceLocation.withDefaultNamespace(
+                            "item/empty_armor_slot_leggings"
+                    ),
+                    ResourceLocation.withDefaultNamespace(
+                            "item/empty_armor_slot_boots"
+                    )
+            );
+
+    private static final List<ResourceLocation> MATERIAL_ICONS =
+            List.of(
+                    ResourceLocation.fromNamespaceAndPath(
+                            Temperies.MOD_ID,
+                            "item/empty_slot_lining"
+                    ),
+
+                    ResourceLocation.fromNamespaceAndPath(
+                            Temperies.MOD_ID,
+                            "item/empty_slot_shears"
+                    )
+            );
+    private final CyclingSlotBackground armorIcon =
+            new CyclingSlotBackground(0);
+
+    private final CyclingSlotBackground materialIcon =
+            new CyclingSlotBackground(1);
+
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+
+        armorIcon.tick(
+                ARMOR_ICONS
+        );
+
+        materialIcon.tick(
+                MATERIAL_ICONS
+        );
+    }
 
     public LiningScreen(
             LiningMenu menu,
@@ -152,6 +201,23 @@ public class LiningScreen
                 imageHeight,
                 256,
                 256
+        );
+
+
+        armorIcon.render(
+                menu,
+                guiGraphics,
+                partialTick,
+                leftPos,
+                topPos
+        );
+
+        materialIcon.render(
+                menu,
+                guiGraphics,
+                partialTick,
+                leftPos,
+                topPos
         );
     }
 }
