@@ -10,67 +10,6 @@ public final class TemperatureEquipment {
     private TemperatureEquipment() {
     }
 
-    public static int getTotalModifier(
-            LivingEntity entity
-    ) {
-        int totalModifier = 0;
-
-        for (ItemStack armorStack : entity.getArmorSlots()) {
-            totalModifier += getStackModifier(armorStack);
-        }
-
-        return Mth.clamp(
-                totalModifier,
-                -TemperatureConstants.MAX_EXPOSURE,
-                TemperatureConstants.MAX_EXPOSURE
-        );
-    }
-
-    public static int getWarmingModifier(
-            LivingEntity entity
-    ) {
-        int total = 0;
-
-        for (ItemStack armorStack : entity.getArmorSlots()) {
-
-            int modifier =
-                    getStackModifier(armorStack);
-
-            if (modifier > 0) {
-                total += modifier;
-            }
-        }
-
-        return Mth.clamp(
-                total,
-                0,
-                TemperatureConstants.MAX_EXPOSURE
-        );
-    }
-
-    public static int getCoolingModifier(
-            LivingEntity entity
-    ) {
-        int total = 0;
-
-        for (ItemStack armorStack : entity.getArmorSlots()) {
-
-            int modifier =
-                    getStackModifier(armorStack);
-
-            if (modifier < 0) {
-                total += Math.abs(modifier);
-            }
-        }
-
-        return Mth.clamp(
-                total,
-                0,
-                TemperatureConstants.MAX_EXPOSURE
-        );
-    }
-
-
     public static int getStackModifier(
             ItemStack stack
     ) {
@@ -92,5 +31,52 @@ public final class TemperatureEquipment {
         );
 
         return modifier;
+    }
+    public record Modifiers(
+            int total,
+            int warming,
+            int cooling
+    ) {
+    }
+    public static Modifiers calculate(
+            LivingEntity entity
+    ) {
+        int total = 0;
+        int warming = 0;
+        int cooling = 0;
+
+        for (ItemStack stack : entity.getArmorSlots()) {
+
+            int modifier =
+                    getStackModifier(stack);
+
+            total += modifier;
+
+            if (modifier > 0) {
+                warming += modifier;
+            } else if (modifier < 0) {
+                cooling += -modifier;
+            }
+        }
+
+        return new Modifiers(
+                Mth.clamp(
+                        total,
+                        -TemperatureConstants.MAX_EXPOSURE,
+                        TemperatureConstants.MAX_EXPOSURE
+                ),
+
+                Mth.clamp(
+                        warming,
+                        0,
+                        TemperatureConstants.MAX_EXPOSURE
+                ),
+
+                Mth.clamp(
+                        cooling,
+                        0,
+                        TemperatureConstants.MAX_EXPOSURE
+                )
+        );
     }
 }

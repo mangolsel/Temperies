@@ -41,13 +41,6 @@ public class Temperies_Client {
                     Temperies.MOD_ID,
                     "temperature_indicator"
             );
-
-    public Temperies_Client(ModContainer container) {
-        container.registerExtensionPoint(
-                IConfigScreenFactory.class,
-                ConfigurationScreen::new
-        );
-    }
     @SubscribeEvent
     static void registerMenuScreens(
             RegisterMenuScreensEvent event
@@ -57,19 +50,6 @@ public class Temperies_Client {
                 LiningScreen::new
         );
     }
-
-    @SubscribeEvent
-    static void onClientSetup(FMLClientSetupEvent event) {
-        Temperies.LOGGER.info(
-                "HELLO FROM CLIENT SETUP"
-        );
-
-        Temperies.LOGGER.info(
-                "MINECRAFT NAME >> {}",
-                Minecraft.getInstance().getUser().getName()
-        );
-    }
-
     @SubscribeEvent
     static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(

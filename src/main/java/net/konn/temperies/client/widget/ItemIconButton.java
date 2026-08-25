@@ -2,6 +2,7 @@ package net.konn.temperies.client.widget;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -32,6 +33,9 @@ public class ItemIconButton extends Button {
         );
 
         this.icon = icon;
+        this.setTooltip(
+                Tooltip.create(description)
+        );
     }
 
     @Override

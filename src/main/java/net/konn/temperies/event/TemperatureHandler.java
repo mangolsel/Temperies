@@ -24,10 +24,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public final class TemperatureHandler {
     private static final int COLD_DAMAGE_INTERVAL_TICKS = 40;
@@ -46,6 +43,8 @@ public final class TemperatureHandler {
     private static final int ROOM_DOWN_RADIUS = 4;
     private static final int ROOM_UP_RADIUS = 6;
     private static final int MAX_VISITED_ROOM_BLOCKS = 4096;
+    private final Map<UUID, RoomCache> roomCache = new HashMap<>();
+    private static final int ROOM_CHECK_INTERVAL_TICKS = 40;
 
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent.Post event) {
@@ -62,6 +61,41 @@ public final class TemperatureHandler {
         maintainCustomFreezing(player);
         applyColdDamage(player);
     }
+    private boolean isInsideEnclosedRoomCached(
+            ServerPlayer player
+    ) {
+        RoomCache cached =
+                roomCache.get(player.getUUID());
+
+        BlockPos currentPos =
+                player.blockPosition();
+
+        if (cached != null
+                && player.tickCount < cached.nextCheckTick()
+                && cached.position().distManhattan(currentPos) <= 1) {
+
+            return cached.enclosed();
+        }
+
+        boolean enclosed =
+                isInsideEnclosedRoom(
+                        player.serverLevel(),
+                        currentPos
+                );
+
+        roomCache.put(
+                player.getUUID(),
+                new RoomCache(
+                        currentPos.immutable(),
+                        enclosed,
+                        player.tickCount
+                                + ROOM_CHECK_INTERVAL_TICKS
+                )
+        );
+
+        return enclosed;
+    }
+
     private int getEquipmentAcceleration(
             int modifier
     ) {
@@ -267,15 +301,17 @@ public final class TemperatureHandler {
             return;
         }
 
+        TemperatureEquipment.Modifiers equipment =
+                TemperatureEquipment.calculate(player);
+
         int equipmentModifier =
-                TemperatureEquipment.getTotalModifier(player);
+                equipment.total();
 
         int warmingModifier =
-                TemperatureEquipment.getWarmingModifier(player);
+                equipment.warming();
 
         int coolingModifier =
-                TemperatureEquipment.getCoolingModifier(player);
-
+                equipment.cooling();
 
         int warmingAcceleration =
                 getEquipmentAcceleration(
@@ -287,9 +323,15 @@ public final class TemperatureHandler {
                         coolingModifier
                 );
 
+        int maximumColdExposure =
+                getMaximumColdExposure(
+                        equipmentModifier
+                );
 
-        int maximumColdExposure = getMaximumColdExposure(equipmentModifier);
-        int maximumHeatExposure = getMaximumHeatExposure(equipmentModifier);
+        int maximumHeatExposure =
+                getMaximumHeatExposure(
+                        equipmentModifier
+                );
 
         Holder<Biome> biome = level.getBiome(
                 player.blockPosition()
@@ -305,10 +347,8 @@ public final class TemperatureHandler {
 
         } else if (biome.is(Temperies_Tags.Biomes.COLD)) {
 
-            boolean enclosed = isInsideEnclosedRoom(
-                    level,
-                    player.blockPosition()
-            );
+            boolean enclosed =
+                    isInsideEnclosedRoomCached(player);
 
             if (enclosed) {
 

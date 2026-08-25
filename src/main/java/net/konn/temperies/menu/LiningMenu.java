@@ -215,11 +215,10 @@ public class LiningMenu extends AbstractContainerMenu {
         );
     }
 
-    private boolean isLiningInput(ItemStack stack) {
-        return stack.is(ItemTags.WOOL)
-                || stack.is(
-                Temperies_Tags.Items.COOLING_MATERIALS
-        )
+    private boolean isLiningInput(
+            ItemStack stack
+    ) {
+        return ThermalLining.canApplyMaterial(stack)
                 || stack.canPerformAction(
                 ItemAbilities.SHEARS_TRIM
         );
@@ -240,7 +239,6 @@ public class LiningMenu extends AbstractContainerMenu {
         ItemStack materialStack =
                 input.getItem(MATERIAL_SLOT);
 
-
         if (!(armorStack.getItem()
                 instanceof ArmorItem armorItem)) {
 
@@ -252,7 +250,6 @@ public class LiningMenu extends AbstractContainerMenu {
             return;
         }
 
-
         if (!isLiningInput(materialStack)) {
 
             result.setItem(
@@ -263,28 +260,19 @@ public class LiningMenu extends AbstractContainerMenu {
             return;
         }
 
-
         ItemStack output =
                 armorStack.copyWithCount(1);
 
-
         /*
          * НОЖНИЦЫ
-         *
-         * Удаляем существующую подкладку.
          */
         if (materialStack.canPerformAction(
                 ItemAbilities.SHEARS_TRIM
         )) {
 
-            /*
-             * Если подкладки нет,
-             * ножницам здесь делать нечего.
-             */
             if (!ThermalLining.hasLining(
                     armorStack
             )) {
-
                 result.setItem(
                         0,
                         ItemStack.EMPTY
@@ -299,35 +287,30 @@ public class LiningMenu extends AbstractContainerMenu {
         }
 
         /*
-         * ШЕРСТЬ
+         * ШЕРСТЬ / ЛЁН
          */
-        else if (materialStack.is(
-                ItemTags.WOOL
-        )) {
+        else {
 
-            ThermalLining.applyWarming(
-                    output,
-                    armorItem
-            );
+            boolean applied =
+                    ThermalLining.applyMaterial(
+                            output,
+                            armorItem,
+                            materialStack
+                    );
+
+            if (!applied) {
+                result.setItem(
+                        0,
+                        ItemStack.EMPTY
+                );
+
+                return;
+            }
         }
 
         /*
-         * ЛЬНЯНАЯ ТКАНЬ
-         */
-        else if (materialStack.is(
-                Temperies_Tags.Items.COOLING_MATERIALS
-        )) {
-
-            ThermalLining.applyCooling(
-                    output,
-                    armorItem
-            );
-        }
-
-
-        /*
-         * Не позволяем совершить операцию,
-         * если результат идентичен исходной броне.
+         * Если ничего не изменилось —
+         * не показываем результат.
          */
         if (ItemStack.isSameItemSameComponents(
                 armorStack,
@@ -341,7 +324,6 @@ public class LiningMenu extends AbstractContainerMenu {
 
             return;
         }
-
 
         result.setItem(
                 0,

@@ -1,6 +1,8 @@
 package net.konn.temperies.temperature;
 
 import net.konn.temperies.component.Temperies_DataComponents;
+import net.konn.temperies.util.Temperies_Tags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 
@@ -8,30 +10,61 @@ public final class ThermalLining {
 
     private ThermalLining() {
     }
+    public static boolean canApplyMaterial(
+            ItemStack material
+    ) {
+        return material.is(ItemTags.WOOL)
+                || material.is(
+                Temperies_Tags.Items.COOLING_MATERIALS
+        );
+    }
+    public static boolean applyMaterial(
+            ItemStack armorStack,
+            ArmorItem armor,
+            ItemStack material
+    ) {
+        if (material.is(ItemTags.WOOL)) {
 
+            applyWarming(
+                    armorStack,
+                    armor
+            );
+
+            return true;
+        }
+
+        if (material.is(
+                Temperies_Tags.Items.COOLING_MATERIALS
+        )) {
+
+            applyCooling(
+                    armorStack,
+                    armor
+            );
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public static int getStrength(
+            ArmorItem.Type type
+    ) {
+        return switch (type) {
+            case CHESTPLATE -> 60;
+            case LEGGINGS -> 50;
+            case HELMET, BOOTS -> 40;
+
+            default -> 0;
+        };
+    }
     public static int getStrength(
             ArmorItem armor
     ) {
-        ArmorItem.Type type =
-                armor.getType();
-
-        if (type == ArmorItem.Type.CHESTPLATE) {
-            return 60;
-        }
-
-        if (type == ArmorItem.Type.LEGGINGS) {
-            return 50;
-        }
-
-        if (type == ArmorItem.Type.HELMET) {
-            return 40;
-        }
-
-        if (type == ArmorItem.Type.BOOTS) {
-            return 40;
-        }
-
-        return 0;
+        return getStrength(
+                armor.getType()
+        );
     }
 
     public static void applyWarming(
