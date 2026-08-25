@@ -1,6 +1,8 @@
 package net.konn.temperies.network;
 
 import net.konn.temperies.client.ClientTemperatureState;
+import net.konn.temperies.menu.LoomTabHandler;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -21,6 +23,25 @@ public final class TemperiesNetworking {
                                 payload.heatExposure(),
                                 payload.coldExposure()
                         )
+        );
+        registrar.playToServer(
+                SwitchLoomTabPayload.TYPE,
+                SwitchLoomTabPayload.STREAM_CODEC,
+                (payload, context) -> {
+
+                    context.enqueueWork(() -> {
+
+                        if (context.player()
+                                instanceof ServerPlayer player) {
+
+                            LoomTabHandler.switchTab(
+                                    player,
+                                    payload.pos(),
+                                    payload.liningTab()
+                            );
+                        }
+                    });
+                }
         );
     }
 }

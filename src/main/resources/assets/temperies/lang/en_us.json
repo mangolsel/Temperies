@@ -19,6 +19,8 @@
   "block.temperies.peat_block": "Peat Block",
 
   "tooltip.temperies.temperature_modifier.positive": "Warms",
-  "tooltip.temperies.temperature_modifier.negative": "Cools"
+  "tooltip.temperies.temperature_modifier.negative": "Cools",
+  "tooltip.temperies.lining.cooling": "Cools",
+  "tooltip.temperies.lining.warming": "Warms"
 
 }

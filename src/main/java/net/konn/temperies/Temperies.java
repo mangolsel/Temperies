@@ -2,10 +2,13 @@ package net.konn.temperies;
 
 import net.konn.temperies.attachment.Temperies_Attachments;
 import net.konn.temperies.block.Temperies_Blocks;
+import net.konn.temperies.component.Temperies_DataComponents;
+import net.konn.temperies.event.LoomLiningHandler;
 import net.konn.temperies.event.TemperatureHandler;
 import net.konn.temperies.item.Temperies_ArmorMaterials;
 import net.konn.temperies.item.Temperies_CreativeModeTabs;
 import net.konn.temperies.item.Temperies_Items;
+import net.konn.temperies.menu.Temperies_Menus;
 import net.konn.temperies.network.TemperiesNetworking;
 import net.konn.temperies.temperature.TemperiesHeatSources;
 import org.slf4j.Logger;
@@ -35,10 +38,13 @@ public class Temperies {
         Temperies_Blocks.register(modEventBus);
         Temperies_Attachments.register(modEventBus);
         Temperies_ArmorMaterials.register(modEventBus);
+        Temperies_DataComponents.register(modEventBus);
+        Temperies_Menus.register(modEventBus);
 
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new TemperatureHandler());
+        NeoForge.EVENT_BUS.register(new LoomLiningHandler());
 
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

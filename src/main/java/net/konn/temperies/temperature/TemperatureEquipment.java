@@ -1,5 +1,6 @@
 package net.konn.temperies.temperature;
 
+import net.konn.temperies.component.Temperies_DataComponents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -12,9 +13,11 @@ public final class TemperatureEquipment {
     public static int getTotalModifier(
             LivingEntity entity
     ) {
-        int totalModifier =
-                getWarmingModifier(entity)
-                        - getCoolingModifier(entity);
+        int totalModifier = 0;
+
+        for (ItemStack armorStack : entity.getArmorSlots()) {
+            totalModifier += getStackModifier(armorStack);
+        }
 
         return Mth.clamp(
                 totalModifier,
@@ -23,14 +26,6 @@ public final class TemperatureEquipment {
         );
     }
 
-    /**
-     * Суммарная сила согревающей одежды.
-     *
-     * Например:
-     * шерстяные ботинки +40
-     * шерстяной нагрудник +60
-     * итого = 100
-     */
     public static int getWarmingModifier(
             LivingEntity entity
     ) {
@@ -38,17 +33,11 @@ public final class TemperatureEquipment {
 
         for (ItemStack armorStack : entity.getArmorSlots()) {
 
-            if (armorStack.getItem()
-                    instanceof TemperatureWearable wearable) {
+            int modifier =
+                    getStackModifier(armorStack);
 
-                int modifier =
-                        wearable.getTemperatureModifier(
-                                armorStack
-                        );
-
-                if (modifier > 0) {
-                    total += modifier;
-                }
+            if (modifier > 0) {
+                total += modifier;
             }
         }
 
@@ -66,17 +55,11 @@ public final class TemperatureEquipment {
 
         for (ItemStack armorStack : entity.getArmorSlots()) {
 
-            if (armorStack.getItem()
-                    instanceof TemperatureWearable wearable) {
+            int modifier =
+                    getStackModifier(armorStack);
 
-                int modifier =
-                        wearable.getTemperatureModifier(
-                                armorStack
-                        );
-
-                if (modifier < 0) {
-                    total += Math.abs(modifier);
-                }
+            if (modifier < 0) {
+                total += Math.abs(modifier);
             }
         }
 
@@ -85,5 +68,29 @@ public final class TemperatureEquipment {
                 0,
                 TemperatureConstants.MAX_EXPOSURE
         );
+    }
+
+
+    public static int getStackModifier(
+            ItemStack stack
+    ) {
+        int modifier = 0;
+
+
+        if (stack.getItem()
+                instanceof TemperatureWearable wearable) {
+
+            modifier +=
+                    wearable.getTemperatureModifier(
+                            stack
+                    );
+        }
+
+        modifier += stack.getOrDefault(
+                Temperies_DataComponents.THERMAL_LINING.get(),
+                0
+        );
+
+        return modifier;
     }
 }
