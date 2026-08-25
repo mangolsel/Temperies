@@ -8,12 +8,17 @@
   "item.temperies.wool_leggings": "Wool Leggings",
   "item.temperies.wool_boots": "Wool Boots",
 
+  "item.temperies.flax_helmet": "Flax Helmet",
+  "item.temperies.flax_chestplate": "Flax Chestplate",
+  "item.temperies.flax_leggings": "Flax Leggings",
+  "item.temperies.flax_boots": "Flax Boots",
+
   "item.temperies.thermoscope": "Thermoscope",
   "item.temperies.thermometer": "Thermometer",
 
   "block.temperies.peat_block": "Peat Block",
 
-  "tooltip.temperies.temperature_modifier.positive": "Plus %s to temperature",
-  "tooltip.temperies.temperature_modifier.negative": "Minus %s to temperature"
+  "tooltip.temperies.temperature_modifier.positive": "Warms",
+  "tooltip.temperies.temperature_modifier.negative": "Cools"
 
 }

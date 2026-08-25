@@ -52,6 +52,30 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern("A A")
                 .unlockedBy("has_wool",has(ItemTags.WOOL)).save(recipeOutput);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Temperies_Items.FLAX_HELMET.get())
+                .define('A', Temperies_Items.FLAX_FIBER.get())
+                .pattern("AAA")
+                .pattern("A A")
+                .unlockedBy("has_flax_fiber",has(Temperies_Items.FLAX_FIBER.get())).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Temperies_Items.FLAX_CHESTPLATE.get())
+                .define('A', Temperies_Items.FLAX_FIBER.get())
+                .pattern("A A")
+                .pattern("AAA")
+                .pattern("AAA")
+                .unlockedBy("has_flax_fiber",has(ItemTags.WOOL)).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Temperies_Items.FLAX_LEGGINGS.get())
+                .define('A', Temperies_Items.FLAX_FIBER.get())
+                .pattern("AAA")
+                .pattern("A A")
+                .pattern("A A")
+                .unlockedBy("has_flax_fiber",has(Temperies_Items.FLAX_FIBER.get())).save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, Temperies_Items.FLAX_BOOTS.get())
+                .define('A', Temperies_Items.FLAX_FIBER.get())
+                .pattern("A A")
+                .pattern("A A")
+                .unlockedBy("has_flax_fiber",has(Temperies_Items.FLAX_FIBER.get())).save(recipeOutput);
+
+
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Temperies_Blocks.PEAT_BLOCK.get())
                 .define('A', Temperies_Items.PEAT.get())
                 .pattern("AA")

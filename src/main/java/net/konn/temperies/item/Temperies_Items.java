@@ -25,6 +25,7 @@ public class Temperies_Items {
 
     //ITEMS
     public static final DeferredItem<Item> PEAT = ITEMS.registerSimpleItem("peat");
+    public static final DeferredItem<Item> FLAX_FIBER = ITEMS.registerSimpleItem("flax_fiber");
 
     //ARMOR
     public static final DeferredItem<Item> WOOL_HELMET =
@@ -50,6 +51,32 @@ public class Temperies_Items {
                     "wool_boots",
                     () -> new TemperatureArmorItem(Temperies_ArmorMaterials.WOOL, ArmorItem.Type.BOOTS, 40,
                             new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(3))));
+
+    public static final DeferredItem<Item> FLAX_BOOTS =
+            ITEMS.register(
+                    "flax_boots",
+                    () -> new TemperatureArmorItem(Temperies_ArmorMaterials.FLAX, ArmorItem.Type.BOOTS, -40,
+                            new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(3))));
+
+    public static final DeferredItem<Item> FLAX_HELMET =
+            ITEMS.register(
+                    "flax_helmet",
+                    () -> new TemperatureArmorItem(Temperies_ArmorMaterials.FLAX, ArmorItem.Type.HELMET, -40,
+                            new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(3))));
+
+    public static final DeferredItem<Item> FLAX_CHESTPLATE =
+            ITEMS.register(
+                    "flax_chestplate",
+                    () -> new TemperatureArmorItem(Temperies_ArmorMaterials.FLAX, ArmorItem.Type.CHESTPLATE, -60,
+                            new Item.Properties().durability(ArmorItem.Type.CHESTPLATE.getDurability(3))));
+
+    public static final DeferredItem<Item> FLAX_LEGGINGS =
+            ITEMS.register(
+                    "flax_leggings",
+                    () -> new TemperatureArmorItem(Temperies_ArmorMaterials.FLAX, ArmorItem.Type.LEGGINGS, -50,
+                            new Item.Properties().durability(ArmorItem.Type.LEGGINGS.getDurability(3))));
+
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

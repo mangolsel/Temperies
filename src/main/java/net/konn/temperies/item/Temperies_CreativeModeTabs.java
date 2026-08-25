@@ -25,6 +25,11 @@ public class Temperies_CreativeModeTabs {
                         output.accept(Temperies_Items.WOOL_BOOTS);
                         output.accept(Temperies_Items.THERMOSCOPE);
                         output.accept(Temperies_Items.THERMOMETER);
+                        output.accept(Temperies_Items.FLAX_FIBER);
+                        output.accept(Temperies_Items.FLAX_HELMET);
+                        output.accept(Temperies_Items.FLAX_CHESTPLATE);
+                        output.accept(Temperies_Items.FLAX_LEGGINGS);
+                        output.accept(Temperies_Items.FLAX_BOOTS);
                     })
                     .build());
 

@@ -20,12 +20,18 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(Temperies_Items.PEAT.get());
         basicItem(Temperies_Items.THERMOSCOPE.get());
         basicItem(Temperies_Items.THERMOMETER.get());
+        basicItem(Temperies_Items.FLAX_FIBER.get());
 
         //ARMOR
         basicItem(Temperies_Items.WOOL_BOOTS.get());
         basicItem(Temperies_Items.WOOL_CHESTPLATE.get());
         basicItem(Temperies_Items.WOOL_LEGGINGS.get());
         basicItem(Temperies_Items.WOOL_HELMET.get());
+
+        basicItem(Temperies_Items.FLAX_BOOTS.get());
+        basicItem(Temperies_Items.FLAX_CHESTPLATE.get());
+        basicItem(Temperies_Items.FLAX_LEGGINGS.get());
+        basicItem(Temperies_Items.FLAX_HELMET.get());
 
     }
     public void buttonItem(DeferredBlock<Block> block, DeferredBlock<Block> baseBlock) {

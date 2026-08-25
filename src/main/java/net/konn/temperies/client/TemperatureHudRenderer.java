@@ -46,7 +46,6 @@ public final class TemperatureHudRenderer {
             TemperatureConstants.DAMAGE_THRESHOLD
                     / (float) TemperatureConstants.MAX_EXPOSURE;
 
-    private static final int REVEAL_SPLIT_Y = 34;
 
     private static final int RIGHT_MARGIN = 6;
 
@@ -97,8 +96,7 @@ public final class TemperatureHudRenderer {
                 guiGraphics,
                 x,
                 y,
-                lineY,
-                signedTemperature
+                lineY
         );
     }
     private static boolean isHoldingTemperatureInstrument(
@@ -214,8 +212,7 @@ public final class TemperatureHudRenderer {
             GuiGraphics guiGraphics,
             int x,
             int y,
-            int lineY,
-            float signedTemperature
+            int lineY
     ) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -223,7 +220,13 @@ public final class TemperatureHudRenderer {
         guiGraphics.pose().pushPose();
 
         try {
-            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            guiGraphics.setColor(
+                    1.0F,
+                    1.0F,
+                    1.0F,
+                    1.0F
+            );
+
             blitFullTexture(
                     guiGraphics,
                     THERMOMETER_TEXTURE,
@@ -231,58 +234,24 @@ public final class TemperatureHudRenderer {
                     y
             );
 
-            guiGraphics.pose().translate(0.0F, 0.0F, 1.0F);
+            guiGraphics.pose().translate(
+                    0.0F,
+                    0.0F,
+                    1.0F
+            );
 
-            if (signedTemperature > 0.0F) {
-                int revealTop = y + lineY;
-                int revealBottom = y + REVEAL_SPLIT_Y;
+            blitFullTexture(
+                    guiGraphics,
+                    TEMPERATURE_TEXTURE,
+                    x,
+                    y
+            );
 
-                if (revealTop < revealBottom) {
-                    guiGraphics.enableScissor(
-                            x,
-                            revealTop,
-                            x + TEXTURE_WIDTH,
-                            revealBottom
-                    );
-
-                    try {
-                        blitFullTexture(
-                                guiGraphics,
-                                TEMPERATURE_TEXTURE,
-                                x,
-                                y
-                        );
-                    } finally {
-                        guiGraphics.disableScissor();
-                    }
-                }
-            } else if (signedTemperature < 0.0F) {
-
-                int revealTop = y + REVEAL_SPLIT_Y;
-                int revealBottom = y + lineY;
-
-                if (revealTop < revealBottom) {
-                    guiGraphics.enableScissor(
-                            x,
-                            revealTop,
-                            x + TEXTURE_WIDTH,
-                            revealBottom
-                    );
-
-                    try {
-                        blitFullTexture(
-                                guiGraphics,
-                                TEMPERATURE_TEXTURE,
-                                x,
-                                y
-                        );
-                    } finally {
-                        guiGraphics.disableScissor();
-                    }
-                }
-            }
-
-            guiGraphics.pose().translate(0.0F, 0.0F, 1.0F);
+            guiGraphics.pose().translate(
+                    0.0F,
+                    0.0F,
+                    1.0F
+            );
 
             drawTemperatureLine(
                     guiGraphics,

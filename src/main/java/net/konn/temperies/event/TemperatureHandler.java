@@ -33,7 +33,6 @@ public final class TemperatureHandler {
     private static final int COLD_DAMAGE_INTERVAL_TICKS = 40;
     private static final float COLD_DAMAGE = 1.0F;
     private static final int UPDATE_INTERVAL_TICKS = 10;
-    private static final int THERMOSCOPE_BREAK_CHECK_INTERVAL_TICKS = 20;
     private static final int THERMOSCOPE_BREAK_THRESHOLD = 90;
     private static final int MAX_HEAT = TemperatureConstants.MAX_EXPOSURE;
     private static final int WATER_COOLING_STEP = 3;
@@ -55,30 +54,20 @@ public final class TemperatureHandler {
 
         if (player.tickCount % UPDATE_INTERVAL_TICKS == 0) {
             updateTemperature(player);
-        }
 
-        if (player.tickCount
-                % THERMOSCOPE_BREAK_CHECK_INTERVAL_TICKS == 0) {
-
-            tryBreakFragileTemperatureInstrument(player);
+            tryBreakFragileTemperatureInstruments(player);
         }
 
         maintainCustomFreezing(player);
         applyColdDamage(player);
     }
-    private void tryBreakFragileTemperatureInstrument(
+
+    private void tryBreakFragileTemperatureInstruments(
             ServerPlayer player
     ) {
         if (!player.isAlive()
                 || player.isCreative()
                 || player.isSpectator()) {
-            return;
-        }
-
-        ItemStack instrument =
-                findHeldFragileTemperatureInstrument(player);
-
-        if (instrument.isEmpty()) {
             return;
         }
 
@@ -105,44 +94,45 @@ public final class TemperatureHandler {
             return;
         }
 
-        instrument.shrink(1);
+        boolean brokeSomething = false;
 
-        player.serverLevel().playSound(
-                null,
-                player.blockPosition(),
-                SoundEvents.GLASS_BREAK,
-                SoundSource.PLAYERS,
-                1.0F,
-                0.9F
-                        + player.getRandom().nextFloat()
-                        * 0.2F
-        );
-    }
-    private ItemStack findHeldFragileTemperatureInstrument(
-            ServerPlayer player
-    ) {
-        ItemStack mainHand =
-                player.getMainHandItem();
+        for (int slot = 0;
+             slot < player.getInventory().getContainerSize();
+             slot++) {
 
-        if (mainHand.getItem()
-                instanceof TemperatureInstrumentItem instrument
-                && instrument.isFragile()) {
+            ItemStack stack =
+                    player.getInventory().getItem(slot);
 
-            return mainHand;
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            if (stack.getItem()
+                    instanceof TemperatureInstrumentItem instrument
+                    && instrument.isFragile()) {
+
+                stack.shrink(stack.getCount());
+
+                brokeSomething = true;
+            }
         }
 
-        ItemStack offHand =
-                player.getOffhandItem();
+        if (brokeSomething) {
+            player.getInventory().setChanged();
 
-        if (offHand.getItem()
-                instanceof TemperatureInstrumentItem instrument
-                && instrument.isFragile()) {
-
-            return offHand;
+            player.serverLevel().playSound(
+                    null,
+                    player.blockPosition(),
+                    SoundEvents.GLASS_BREAK,
+                    SoundSource.PLAYERS,
+                    1.0F,
+                    0.9F
+                            + player.getRandom().nextFloat()
+                            * 0.2F
+            );
         }
-
-        return ItemStack.EMPTY;
     }
+
     private void applyColdDamage(ServerPlayer player) {
         if (!player.isAlive()
                 || player.isCreative()
