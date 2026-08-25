@@ -55,7 +55,7 @@ public final class TemperatureEquipment {
             if (modifier > 0) {
                 warming += modifier;
             } else if (modifier < 0) {
-                cooling += -modifier;
+                cooling -= modifier;
             }
         }
 

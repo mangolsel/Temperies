@@ -93,15 +93,6 @@ public final class ThermalLining {
         );
     }
 
-    public static int getModifier(
-            ItemStack stack
-    ) {
-        return stack.getOrDefault(
-                Temperies_DataComponents.THERMAL_LINING.get(),
-                0
-        );
-    }
-
     public static boolean hasLining(
             ItemStack stack
     ) {

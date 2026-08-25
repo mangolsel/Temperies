@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemIconButton extends Button {
 
@@ -40,7 +41,7 @@ public class ItemIconButton extends Button {
 
     @Override
     protected void renderWidget(
-            GuiGraphics guiGraphics,
+            @NotNull GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float partialTick

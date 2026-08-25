@@ -1,13 +1,11 @@
 package net.konn.temperies.menu;
 
 import net.konn.temperies.temperature.ThermalLining;
-import net.konn.temperies.util.Temperies_Tags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,12 +18,12 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.ItemAbilities;
+import org.jetbrains.annotations.NotNull;
 
 public class LiningMenu extends AbstractContainerMenu {
 
     private static final int ARMOR_SLOT = 0;
     private static final int MATERIAL_SLOT = 1;
-    private static final int RESULT_SLOT = 2;
 
     private final SimpleContainer input =
             new SimpleContainer(2);
@@ -71,7 +69,7 @@ public class LiningMenu extends AbstractContainerMenu {
         this.loomPos = loomPos;
 
         input.addListener(
-                container -> slotsChanged(container)
+                this::slotsChanged
         );
 
         addLiningSlots();
@@ -91,7 +89,7 @@ public class LiningMenu extends AbstractContainerMenu {
                         35
                 ) {
                     @Override
-                    public boolean mayPlace(ItemStack stack) {
+                    public boolean mayPlace(@NotNull ItemStack stack) {
                         return stack.getItem()
                                 instanceof ArmorItem;
                     }
@@ -114,7 +112,7 @@ public class LiningMenu extends AbstractContainerMenu {
                         35
                 ) {
                     @Override
-                    public boolean mayPlace(ItemStack stack) {
+                    public boolean mayPlace(@NotNull ItemStack stack) {
                         return isLiningInput(stack);
                     }
                 }
@@ -131,14 +129,14 @@ public class LiningMenu extends AbstractContainerMenu {
                         35
                 ) {
                     @Override
-                    public boolean mayPlace(ItemStack stack) {
+                    public boolean mayPlace(@NotNull ItemStack stack) {
                         return false;
                     }
 
                     @Override
                     public void onTake(
-                            Player player,
-                            ItemStack stack
+                            @NotNull Player player,
+                            @NotNull ItemStack stack
                     ) {
                         super.onTake(player, stack);
 
@@ -225,7 +223,7 @@ public class LiningMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void slotsChanged(Container container) {
+    public void slotsChanged(@NotNull Container container) {
         super.slotsChanged(container);
 
         updateResult();
@@ -381,7 +379,7 @@ public class LiningMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
 
         return AbstractContainerMenu.stillValid(
                 access,
@@ -391,13 +389,12 @@ public class LiningMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(
-            Player player,
+    public @NotNull ItemStack quickMoveStack(
+            @NotNull Player player,
             int index
     ) {
 
-        ItemStack resultStack =
-                ItemStack.EMPTY;
+        ItemStack resultStack;
 
         Slot slot =
                 this.slots.get(index);
@@ -412,9 +409,6 @@ public class LiningMenu extends AbstractContainerMenu {
         resultStack =
                 stack.copy();
 
-        /*
-         * Наши три слота.
-         */
         if (index < 3) {
 
             if (!moveItemStackTo(
@@ -483,17 +477,8 @@ public class LiningMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player player) {
+    public void removed(@NotNull Player player) {
         super.removed(player);
-
-        /*
-         * Если игрок закрыл интерфейс
-         * или переключил вкладку —
-         * возвращаем вещи.
-         */
-        this.clearContainer(
-                player,
-                input
-        );
+        this.clearContainer(player, input);
     }
 }

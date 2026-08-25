@@ -10,25 +10,16 @@ import net.konn.temperies.item.Temperies_Items;
 import net.konn.temperies.menu.Temperies_Menus;
 import net.konn.temperies.network.TemperiesNetworking;
 import net.konn.temperies.temperature.TemperiesHeatSources;
-import org.slf4j.Logger;
-import com.mojang.logging.LogUtils;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 @Mod(Temperies.MOD_ID)
 public class Temperies {
     public static final String MOD_ID = "temperies";
-    public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Temperies(IEventBus modEventBus, ModContainer modContainer) {
+    public Temperies(IEventBus modEventBus) {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(TemperiesNetworking::registerPayloads);
 
