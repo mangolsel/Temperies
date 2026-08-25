@@ -4,6 +4,7 @@ import net.konn.temperies.temperature.ThermalLining;
 import net.konn.temperies.util.Temperies_Tags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
@@ -18,6 +19,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.ItemAbilities;
 
 public class LiningMenu extends AbstractContainerMenu {
 
@@ -113,7 +115,7 @@ public class LiningMenu extends AbstractContainerMenu {
                 ) {
                     @Override
                     public boolean mayPlace(ItemStack stack) {
-                        return isLiningMaterial(stack);
+                        return isLiningInput(stack);
                     }
                 }
         );
@@ -140,27 +142,72 @@ public class LiningMenu extends AbstractContainerMenu {
                     ) {
                         super.onTake(player, stack);
 
+
+                        ItemStack materialStack =
+                                input.getItem(MATERIAL_SLOT);
+
+                        boolean cuttingLining =
+                                materialStack.canPerformAction(
+                                        ItemAbilities.SHEARS_TRIM
+                                );
+
+
+                        /*
+                         * Забираем исходную броню.
+                         */
                         input.removeItem(
                                 ARMOR_SLOT,
                                 1
                         );
 
-                        input.removeItem(
-                                MATERIAL_SLOT,
-                                1
-                        );
+
+                        if (cuttingLining) {
+
+                            /*
+                             * Ножницы не расходуются.
+                             * Вместо этого теряют 1 прочность.
+                             */
+                            if (player instanceof ServerPlayer serverPlayer) {
+
+                                materialStack.hurtAndBreak(
+                                        1,
+                                        serverPlayer.serverLevel(),
+                                        serverPlayer,
+                                        brokenItem -> {
+                                        }
+                                );
+                            }
+
+                            input.setChanged();
+
+                        } else {
+
+                            /*
+                             * Шерсть / лён расходуются как раньше.
+                             */
+                            input.removeItem(
+                                    MATERIAL_SLOT,
+                                    1
+                            );
+                        }
+
 
                         access.execute(
                                 (level, pos) ->
                                         level.playSound(
                                                 null,
                                                 pos,
-                                                SoundEvents.UI_LOOM_TAKE_RESULT,
+
+                                                cuttingLining
+                                                        ? SoundEvents.SHEEP_SHEAR
+                                                        : SoundEvents.UI_LOOM_TAKE_RESULT,
+
                                                 SoundSource.BLOCKS,
                                                 1.0F,
                                                 1.0F
                                         )
                         );
+
 
                         slotsChanged(input);
                     }
@@ -168,10 +215,13 @@ public class LiningMenu extends AbstractContainerMenu {
         );
     }
 
-    private boolean isLiningMaterial(ItemStack stack) {
+    private boolean isLiningInput(ItemStack stack) {
         return stack.is(ItemTags.WOOL)
                 || stack.is(
                 Temperies_Tags.Items.COOLING_MATERIALS
+        )
+                || stack.canPerformAction(
+                ItemAbilities.SHEARS_TRIM
         );
     }
 
@@ -190,6 +240,7 @@ public class LiningMenu extends AbstractContainerMenu {
         ItemStack materialStack =
                 input.getItem(MATERIAL_SLOT);
 
+
         if (!(armorStack.getItem()
                 instanceof ArmorItem armorItem)) {
 
@@ -201,7 +252,8 @@ public class LiningMenu extends AbstractContainerMenu {
             return;
         }
 
-        if (!isLiningMaterial(materialStack)) {
+
+        if (!isLiningInput(materialStack)) {
 
             result.setItem(
                     0,
@@ -211,17 +263,60 @@ public class LiningMenu extends AbstractContainerMenu {
             return;
         }
 
+
         ItemStack output =
                 armorStack.copyWithCount(1);
 
-        if (materialStack.is(ItemTags.WOOL)) {
+
+        /*
+         * НОЖНИЦЫ
+         *
+         * Удаляем существующую подкладку.
+         */
+        if (materialStack.canPerformAction(
+                ItemAbilities.SHEARS_TRIM
+        )) {
+
+            /*
+             * Если подкладки нет,
+             * ножницам здесь делать нечего.
+             */
+            if (!ThermalLining.hasLining(
+                    armorStack
+            )) {
+
+                result.setItem(
+                        0,
+                        ItemStack.EMPTY
+                );
+
+                return;
+            }
+
+            ThermalLining.remove(
+                    output
+            );
+        }
+
+        /*
+         * ШЕРСТЬ
+         */
+        else if (materialStack.is(
+                ItemTags.WOOL
+        )) {
 
             ThermalLining.applyWarming(
                     output,
                     armorItem
             );
+        }
 
-        } else {
+        /*
+         * ЛЬНЯНАЯ ТКАНЬ
+         */
+        else if (materialStack.is(
+                Temperies_Tags.Items.COOLING_MATERIALS
+        )) {
 
             ThermalLining.applyCooling(
                     output,
@@ -229,10 +324,10 @@ public class LiningMenu extends AbstractContainerMenu {
             );
         }
 
+
         /*
-         * Если результат вообще ничем
-         * не отличается от исходной брони,
-         * повторно материал тратить не даём.
+         * Не позволяем совершить операцию,
+         * если результат идентичен исходной броне.
          */
         if (ItemStack.isSameItemSameComponents(
                 armorStack,
@@ -246,6 +341,7 @@ public class LiningMenu extends AbstractContainerMenu {
 
             return;
         }
+
 
         result.setItem(
                 0,
@@ -377,7 +473,7 @@ public class LiningMenu extends AbstractContainerMenu {
             /*
              * Материал -> слот материала.
              */
-            else if (isLiningMaterial(stack)) {
+            else if (isLiningInput(stack)) {
 
                 if (!moveItemStackTo(
                         stack,
